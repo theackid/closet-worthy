@@ -103,10 +103,31 @@ export async function estimatePricing(
   subcategoryName: string,
   conditionLabel: string
 ): Promise<AIPricingResult> {
-  const retailPrompt = `Estimate the original retail price in CAD for this item:
+  const userShoppingContext = `
+IMPORTANT CONTEXT: The user typically shops at these retailers:
+- The Narwhal Boutique (primary source - curated designer boutique)
+- Ssense (luxury, contemporary designer pieces)
+- Net-a-Porter (high-end luxury)
+- Nordstrom (mid-to-luxury department store)
+- Aritzia (contemporary Canadian brand)
+- Zara (fast fashion, trend-driven)
+- COS (minimalist contemporary)
+- Acne Studios website (Scandinavian luxury direct)
+- Revolve (contemporary, influencer-driven brands)
+
+These retailers indicate the user's price range spans from contemporary ($100-400) to luxury ($400-2000+).
+When estimating retail prices, consider that items are likely purchased from these channels.
+`
+
+  const retailPrompt = `${userShoppingContext}
+
+Estimate the original retail price in CAD for this item:
 - Brand: ${brandName}
 - Item: ${itemName} - ${modelStyle}
 - Category: ${categoryName} / ${subcategoryName}
+
+Given the user's shopping habits above, provide an accurate retail price estimate.
+Consider which of these retailers would typically carry this brand.
 
 Respond with ONLY a JSON object (no markdown, no code blocks):
 {
@@ -115,13 +136,18 @@ Respond with ONLY a JSON object (no markdown, no code blocks):
 
 The retailPrice should be a number representing CAD.`
 
-  const resalePrompt = `Estimate the current resale price in CAD for this item:
+  const resalePrompt = `${userShoppingContext}
+
+Estimate the current resale price in CAD for this item:
 - Brand: ${brandName}
 - Item: ${itemName} - ${modelStyle}
 - Category: ${categoryName} / ${subcategoryName}
 - Condition: ${conditionLabel}
 
 Consider platforms like Grailed, Vestiaire Collective, The RealReal, Poshmark.
+The user bought this from one of the retailers listed above, so it's likely a quality piece.
+Contemporary brands typically retain 30-45% of retail value in excellent condition.
+Luxury brands can retain 40-60% depending on demand.
 
 Respond with ONLY a JSON object (no markdown, no code blocks):
 {
@@ -163,6 +189,10 @@ export async function generateListing(
   conditionLabel: string,
   conditionNotes?: string
 ): Promise<AIListingResult> {
+  const userShoppingContext = `
+CONTEXT: This item was purchased from curated retailers including The Narwhal Boutique, Ssense, Net-a-Porter, Nordstrom, Aritzia, or similar quality retailers. This indicates it's a well-selected, quality piece worth highlighting in the listing.
+`
+
   const titlePrompt = `Create a short, resale-ready title for this item for platforms like Grailed and Vestiaire.
 
 Format: Brand – Model – Category – Size – Colour
@@ -183,7 +213,9 @@ Respond with ONLY a JSON object (no markdown):
   "title": "Your title here"
 }`
 
-  const descriptionPrompt = `Write a compelling resale listing description for this clothing item.
+  const descriptionPrompt = `${userShoppingContext}
+
+Write a compelling resale listing description for this clothing item.
 Use a friendly, concise reseller tone (like Grailed or Vestiaire).
 
 Include:
@@ -195,6 +227,7 @@ Include:
 - Condition: ${conditionLabel}${conditionNotes ? ` (${conditionNotes})` : ''}
 
 Keep it under 120 words. No emojis. Add 3-6 SEO-style keywords at the end separated by commas.
+Emphasize quality and that this is a curated piece from a reputable source.
 
 Respond with ONLY a JSON object (no markdown):
 {
