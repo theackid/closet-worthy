@@ -120,7 +120,6 @@ export default function ItemDetail({ item, onClose, onEdit }: ItemDetailProps) {
             <DetailItem label="Size" value={item.size || 'N/A'} />
             <DetailItem label="Condition" value={item.condition?.label || 'N/A'} />
             <DetailItem label="Colour" value={item.colour || 'N/A'} />
-            <DetailItem label="Material" value={item.material || 'N/A'} />
           </div>
 
           {/* Pricing */}
