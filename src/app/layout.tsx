@@ -5,7 +5,7 @@ import './globals.css'
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'Closet Worthy - AI-Powered Closet Management',
+  title: 'Closet Worthy - Where Your Wardrobe Comes to Life',
   description: 'Manage your wardrobe, track value, and optimize resale with AI',
 }
 
