@@ -149,21 +149,6 @@ export default function ItemDetail({ item, onClose, onEdit }: ItemDetailProps) {
             </div>
           </div>
 
-          {/* Purchase Details */}
-          {(item.purchase_date || item.purchase_location) && (
-            <div className="grid grid-cols-2 gap-4">
-              {item.purchase_date && (
-                <DetailItem 
-                  label="Purchase Date" 
-                  value={new Date(item.purchase_date).toLocaleDateString()} 
-                />
-              )}
-              {item.purchase_location && (
-                <DetailItem label="Purchase Location" value={item.purchase_location} />
-              )}
-            </div>
-          )}
-
           {/* Edit Button */}
           <button
             onClick={onEdit}
