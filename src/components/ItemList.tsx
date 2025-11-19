@@ -1,34 +1,38 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { supabase } from '@/lib/supabase'
 import { ClosetItem } from '@/types'
-import { Edit2, Trash2, Search, Filter, Package } from 'lucide-react'
+import { Package, Edit2, Trash2, Search } from 'lucide-react'
+import ItemDetail from '@/components/ItemDetail'
 
 interface ItemListProps {
   onEdit: (item: ClosetItem) => void
-  refreshTrigger?: number
+  refreshTrigger: number
+  initialFilter?: string
 }
 
 type FilterType = 'all' | 'keep' | 'sell' | 'donate' | 'no-photos' | 'no-pricing'
 
-export default function ItemList({ onEdit, refreshTrigger }: ItemListProps) {
+export default function ItemList({ onEdit, refreshTrigger, initialFilter = 'all' }: ItemListProps) {
   const [items, setItems] = useState<ClosetItem[]>([])
-  const [filteredItems, setFilteredItems] = useState<ClosetItem[]>([])
   const [loading, setLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState('')
   const [activeFilter, setActiveFilter] = useState<FilterType>('all')
+  const [viewingItem, setViewingItem] = useState<ClosetItem | null>(null)
+
+  // Set initial filter when passed from dashboard
+  useEffect(() => {
+    if (initialFilter) {
+      setActiveFilter(initialFilter as FilterType)
+    }
+  }, [initialFilter])
 
   useEffect(() => {
     loadItems()
   }, [refreshTrigger])
 
-  useEffect(() => {
-    applyFilters()
-  }, [items, searchQuery, activeFilter])
-
   async function loadItems() {
-    setLoading(true)
     try {
       const { data, error } = await supabase
         .from('closet_items')
@@ -36,54 +40,17 @@ export default function ItemList({ onEdit, refreshTrigger }: ItemListProps) {
           *,
           brand:brands(name),
           category:categories(name),
-          subcategory:subcategories(name),
-          condition:conditions(label, score)
+          condition:conditions(label)
         `)
         .order('created_at', { ascending: false })
 
       if (error) throw error
       setItems(data || [])
     } catch (error) {
-      console.error('Load items error:', error)
+      console.error('Error loading items:', error)
     } finally {
       setLoading(false)
     }
-  }
-
-  function applyFilters() {
-    let filtered = [...items]
-
-    // Apply search
-    if (searchQuery) {
-      const query = searchQuery.toLowerCase()
-      filtered = filtered.filter(item => 
-        item.item_name.toLowerCase().includes(query) ||
-        item.brand?.name?.toLowerCase().includes(query) ||
-        item.category?.name?.toLowerCase().includes(query) ||
-        item.colour?.toLowerCase().includes(query)
-      )
-    }
-
-    // Apply filter
-    switch (activeFilter) {
-      case 'keep':
-        filtered = filtered.filter(item => item.status === 'Keep')
-        break
-      case 'sell':
-        filtered = filtered.filter(item => item.status === 'Sell')
-        break
-      case 'donate':
-        filtered = filtered.filter(item => item.status === 'Donate')
-        break
-      case 'no-photos':
-        filtered = filtered.filter(item => !item.photo_urls || item.photo_urls.length === 0)
-        break
-      case 'no-pricing':
-        filtered = filtered.filter(item => !item.retail_price_cad || !item.resale_price_cad)
-        break
-    }
-
-    setFilteredItems(filtered)
   }
 
   async function handleDelete(id: string) {
@@ -96,17 +63,44 @@ export default function ItemList({ onEdit, refreshTrigger }: ItemListProps) {
         .eq('id', id)
 
       if (error) throw error
-      await loadItems()
+      loadItems()
     } catch (error) {
-      console.error('Delete error:', error)
-      alert('Failed to delete item')
+      console.error('Error deleting item:', error)
     }
   }
+
+  const filteredItems = items.filter(item => {
+    // Search filter
+    const searchLower = searchQuery.toLowerCase()
+    const matchesSearch = !searchQuery || 
+      item.item_name.toLowerCase().includes(searchLower) ||
+      item.brand?.name?.toLowerCase().includes(searchLower) ||
+      item.category?.name?.toLowerCase().includes(searchLower) ||
+      item.colour?.toLowerCase().includes(searchLower)
+
+    if (!matchesSearch) return false
+
+    // Status filters
+    switch (activeFilter) {
+      case 'keep':
+        return item.status === 'Keep'
+      case 'sell':
+        return item.status === 'Sell'
+      case 'donate':
+        return item.status === 'Donate'
+      case 'no-photos':
+        return !item.photo_urls || item.photo_urls.length === 0
+      case 'no-pricing':
+        return !item.retail_price_cad || !item.resale_price_cad
+      default:
+        return true
+    }
+  })
 
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="text-gray-500">Loading items...</div>
+        <div className="text-primary-400">Loading your items... ✨</div>
       </div>
     )
   }
@@ -184,11 +178,24 @@ export default function ItemList({ onEdit, refreshTrigger }: ItemListProps) {
             <ItemCard
               key={item.id}
               item={item}
+              onView={() => setViewingItem(item)}
               onEdit={() => onEdit(item)}
               onDelete={() => handleDelete(item.id)}
             />
           ))}
         </div>
+      )}
+
+      {/* Item Detail Modal */}
+      {viewingItem && (
+        <ItemDetail
+          item={viewingItem}
+          onClose={() => setViewingItem(null)}
+          onEdit={() => {
+            setViewingItem(null)
+            onEdit(viewingItem)
+          }}
+        />
       )}
     </div>
   )
@@ -217,11 +224,12 @@ function FilterButton({ active, onClick, label }: FilterButtonProps) {
 
 interface ItemCardProps {
   item: ClosetItem
+  onView: () => void
   onEdit: () => void
   onDelete: () => void
 }
 
-function ItemCard({ item, onEdit, onDelete }: ItemCardProps) {
+function ItemCard({ item, onView, onEdit, onDelete }: ItemCardProps) {
   const photoUrl = item.photo_urls && item.photo_urls.length > 0 ? item.photo_urls[0] : null
   const statusStyles = {
     Keep: 'bg-gradient-to-r from-lavender-100 to-lavender-200 text-lavender-700 border-lavender-200',
@@ -230,7 +238,10 @@ function ItemCard({ item, onEdit, onDelete }: ItemCardProps) {
   }
 
   return (
-    <div className="card-soft overflow-hidden hover:scale-105 hover:shadow-glow transition-all duration-300 group">
+    <div 
+      className="card-soft overflow-hidden hover:scale-105 hover:shadow-glow transition-all duration-300 group cursor-pointer"
+      onClick={onView}
+    >
       {/* Photo */}
       <div className="aspect-square bg-gradient-to-br from-cream-100 to-primary-50 relative overflow-hidden">
         {photoUrl ? (
@@ -249,6 +260,11 @@ function ItemCard({ item, onEdit, onDelete }: ItemCardProps) {
             {item.status || 'Keep'}
           </span>
         </div>
+        {item.photo_urls && item.photo_urls.length > 1 && (
+          <div className="absolute bottom-3 right-3 px-2 py-1 bg-white/90 backdrop-blur-sm rounded-lg text-xs font-medium text-gray-700">
+            {item.photo_urls.length} photos
+          </div>
+        )}
       </div>
 
       {/* Info */}
@@ -285,16 +301,22 @@ function ItemCard({ item, onEdit, onDelete }: ItemCardProps) {
         </div>
 
         {/* Actions */}
-        <div className="flex gap-2">
+        <div className="flex gap-2" onClick={(e) => e.stopPropagation()}>
           <button
-            onClick={onEdit}
+            onClick={(e) => {
+              e.stopPropagation()
+              onEdit()
+            }}
             className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-gradient-to-r from-primary-500 to-accent-500 text-white rounded-xl hover:shadow-glow transition-all text-sm font-medium"
           >
             <Edit2 className="w-4 h-4" />
             Edit
           </button>
           <button
-            onClick={onDelete}
+            onClick={(e) => {
+              e.stopPropagation()
+              onDelete()
+            }}
             className="px-4 py-2.5 border-2 border-primary-200 text-primary-600 rounded-xl hover:bg-primary-50 hover:border-primary-300 transition-all text-sm"
           >
             <Trash2 className="w-4 h-4" />
