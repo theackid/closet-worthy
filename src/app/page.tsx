@@ -1,11 +1,11 @@
 'use client'
 
 import { useState } from 'react'
+import { Package, Plus, Menu, X, LayoutDashboard } from 'lucide-react'
 import Dashboard from '@/components/Dashboard'
 import ItemList from '@/components/ItemList'
 import ItemForm from '@/components/ItemForm'
 import { ClosetItem } from '@/types'
-import { LayoutDashboard, Package, Plus, Menu, X } from 'lucide-react'
 
 type View = 'dashboard' | 'items'
 
@@ -15,6 +15,7 @@ export default function Home() {
   const [editingItem, setEditingItem] = useState<ClosetItem | undefined>()
   const [refreshTrigger, setRefreshTrigger] = useState(0)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const [itemsFilter, setItemsFilter] = useState<string>('all')
 
   function handleAddNew() {
     setEditingItem(undefined)
@@ -35,6 +36,12 @@ export default function Home() {
   function handleCancel() {
     setShowForm(false)
     setEditingItem(undefined)
+  }
+
+  function handleNavigateToItems(filter?: string) {
+    setActiveView('items')
+    setItemsFilter(filter || 'all')
+    setMobileMenuOpen(false)
   }
 
   return (
@@ -65,7 +72,7 @@ export default function Home() {
               />
               <NavButton
                 active={activeView === 'items'}
-                onClick={() => setActiveView('items')}
+                onClick={() => handleNavigateToItems('all')}
                 icon={Package}
                 label="Items"
               />
@@ -106,7 +113,7 @@ export default function Home() {
               </button>
               <button
                 onClick={() => {
-                  setActiveView('items')
+                  handleNavigateToItems('all')
                   setMobileMenuOpen(false)
                 }}
                 className={`w-full flex items-center gap-3 px-4 py-3 rounded-2xl transition-all ${
@@ -142,11 +149,12 @@ export default function Home() {
             onCancel={handleCancel}
           />
         ) : activeView === 'dashboard' ? (
-          <Dashboard />
+          <Dashboard onNavigateToItems={handleNavigateToItems} />
         ) : (
           <ItemList
             onEdit={handleEdit}
             refreshTrigger={refreshTrigger}
+            initialFilter={itemsFilter}
           />
         )}
       </main>
