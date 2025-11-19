@@ -94,14 +94,19 @@ export default function Dashboard() {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="text-gray-500">Loading dashboard...</div>
+        <div className="text-primary-400">Loading your closet... ✨</div>
       </div>
     )
   }
 
   return (
-    <div className="space-y-6">
-      <h2 className="text-2xl font-bold text-gray-900">Dashboard</h2>
+    <div className="space-y-8">
+      <div className="flex items-center gap-3">
+        <h2 className="text-3xl font-bold bg-gradient-to-r from-primary-600 to-accent-600 bg-clip-text text-transparent">
+          Your Dashboard
+        </h2>
+        <span className="text-2xl">✨</span>
+      </div>
 
       {/* Metrics Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -109,25 +114,25 @@ export default function Dashboard() {
           title="Total Items"
           value={metrics.totalItems.toString()}
           icon={Package}
-          color="blue"
+          gradient="from-primary-400 to-primary-500"
         />
         <MetricCard
           title="Total Retail Value"
           value={`$${metrics.totalRetailValue.toLocaleString('en-CA', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`}
           icon={DollarSign}
-          color="green"
+          gradient="from-peach-400 to-peach-500"
         />
         <MetricCard
           title="Est. Resale Value"
           value={`$${metrics.totalResaleValue.toLocaleString('en-CA', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`}
           icon={TrendingUp}
-          color="purple"
+          gradient="from-accent-400 to-accent-500"
         />
         <MetricCard
           title="Items to Sell"
           value={metrics.itemsToSell.toString()}
           icon={Tag}
-          color="orange"
+          gradient="from-lavender-400 to-lavender-500"
         />
       </div>
 
@@ -137,48 +142,102 @@ export default function Dashboard() {
           title="Need Photos"
           count={metrics.itemsToPhotograph}
           description="Items missing photos"
-          color="red"
+          gradient="from-primary-100 to-primary-200"
+          textColor="text-primary-700"
         />
         <ActionCard
           title="Need Pricing"
           count={metrics.itemsToPrice}
           description="Items without price estimates"
-          color="yellow"
+          gradient="from-peach-100 to-peach-200"
+          textColor="text-peach-700"
         />
         <ActionCard
           title="Ready to Sell"
           count={metrics.itemsToSell}
           description="Items marked for sale"
-          color="green"
+          gradient="from-accent-100 to-accent-200"
+          textColor="text-accent-700"
         />
       </div>
 
       {/* Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Value by Brand */}
-        <div className="bg-white p-6 rounded-lg shadow-md">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Value by Brand (Top 10)</h3>
+        <div className="card-soft p-6">
+          <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+            Value by Brand (Top 10)
+            <span className="text-sm">👜</span>
+          </h3>
           <ResponsiveContainer width="100%" height={300}>
             <BarChart data={brandData}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="name" angle={-45} textAnchor="end" height={100} />
-              <YAxis />
-              <Tooltip formatter={(value) => `$${value}`} />
-              <Bar dataKey="value" fill="#0ea5e9" />
+              <CartesianGrid strokeDasharray="3 3" stroke="#f9d0d9" />
+              <XAxis 
+                dataKey="name" 
+                angle={-45} 
+                textAnchor="end" 
+                height={100}
+                stroke="#cd2d5e"
+                style={{ fontSize: '12px' }}
+              />
+              <YAxis stroke="#cd2d5e" style={{ fontSize: '12px' }} />
+              <Tooltip 
+                formatter={(value) => `$${value}`}
+                contentStyle={{ 
+                  borderRadius: '12px', 
+                  border: '1px solid #f9d0d9',
+                  boxShadow: '0 4px 6px rgba(226, 80, 122, 0.1)'
+                }}
+              />
+              <Bar 
+                dataKey="value" 
+                fill="url(#brandGradient)" 
+                radius={[8, 8, 0, 0]}
+              />
+              <defs>
+                <linearGradient id="brandGradient" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="#e2507a" />
+                  <stop offset="100%" stopColor="#df43ee" />
+                </linearGradient>
+              </defs>
             </BarChart>
           </ResponsiveContainer>
         </div>
 
         {/* Value by Category */}
-        <div className="bg-white p-6 rounded-lg shadow-md">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Value by Category</h3>
+        <div className="card-soft p-6">
+          <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+            Value by Category
+            <span className="text-sm">👗</span>
+          </h3>
           <ResponsiveContainer width="100%" height={300}>
             <BarChart data={categoryData}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="name" />
-              <YAxis />
-              <Tooltip formatter={(value) => `$${value}`} />
-              <Bar dataKey="value" fill="#8b5cf6" />
+              <CartesianGrid strokeDasharray="3 3" stroke="#e2ddf7" />
+              <XAxis 
+                dataKey="name"
+                stroke="#6f49b3"
+                style={{ fontSize: '12px' }}
+              />
+              <YAxis stroke="#6f49b3" style={{ fontSize: '12px' }} />
+              <Tooltip 
+                formatter={(value) => `$${value}`}
+                contentStyle={{ 
+                  borderRadius: '12px', 
+                  border: '1px solid #e2ddf7',
+                  boxShadow: '0 4px 6px rgba(149, 120, 219, 0.1)'
+                }}
+              />
+              <Bar 
+                dataKey="value" 
+                fill="url(#categoryGradient)"
+                radius={[8, 8, 0, 0]}
+              />
+              <defs>
+                <linearGradient id="categoryGradient" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="#9578db" />
+                  <stop offset="100%" stopColor="#b19fe7" />
+                </linearGradient>
+              </defs>
             </BarChart>
           </ResponsiveContainer>
         </div>
@@ -191,26 +250,21 @@ interface MetricCardProps {
   title: string
   value: string
   icon: any
-  color: 'blue' | 'green' | 'purple' | 'orange'
+  gradient: string
 }
 
-function MetricCard({ title, value, icon: Icon, color }: MetricCardProps) {
-  const colorClasses = {
-    blue: 'bg-blue-100 text-blue-600',
-    green: 'bg-green-100 text-green-600',
-    purple: 'bg-purple-100 text-purple-600',
-    orange: 'bg-orange-100 text-orange-600',
-  }
-
+function MetricCard({ title, value, icon: Icon, gradient }: MetricCardProps) {
   return (
-    <div className="bg-white p-6 rounded-lg shadow-md">
+    <div className="card-soft p-6 hover:scale-105 transition-transform duration-300">
       <div className="flex items-center justify-between">
         <div>
-          <p className="text-sm text-gray-600">{title}</p>
-          <p className="text-2xl font-bold text-gray-900 mt-1">{value}</p>
+          <p className="text-sm text-gray-600 font-medium mb-1">{title}</p>
+          <p className="text-3xl font-bold bg-gradient-to-r from-gray-700 to-gray-900 bg-clip-text text-transparent">
+            {value}
+          </p>
         </div>
-        <div className={`p-3 rounded-lg ${colorClasses[color]}`}>
-          <Icon className="w-6 h-6" />
+        <div className={`p-4 rounded-2xl bg-gradient-to-br ${gradient} shadow-soft`}>
+          <Icon className="w-7 h-7 text-white" />
         </div>
       </div>
     </div>
@@ -221,30 +275,19 @@ interface ActionCardProps {
   title: string
   count: number
   description: string
-  color: 'red' | 'yellow' | 'green'
+  gradient: string
+  textColor: string
 }
 
-function ActionCard({ title, count, description, color }: ActionCardProps) {
-  const colorClasses = {
-    red: 'border-red-200 bg-red-50',
-    yellow: 'border-yellow-200 bg-yellow-50',
-    green: 'border-green-200 bg-green-50',
-  }
-
-  const textColorClasses = {
-    red: 'text-red-900',
-    yellow: 'text-yellow-900',
-    green: 'text-green-900',
-  }
-
+function ActionCard({ title, count, description, gradient, textColor }: ActionCardProps) {
   return (
-    <div className={`border-l-4 p-4 rounded ${colorClasses[color]}`}>
+    <div className={`rounded-3xl bg-gradient-to-br ${gradient} p-6 shadow-soft hover:shadow-soft-lg transition-all duration-300`}>
       <div className="flex items-center justify-between">
         <div>
-          <p className={`text-lg font-semibold ${textColorClasses[color]}`}>{title}</p>
+          <p className={`text-lg font-bold ${textColor} mb-1`}>{title}</p>
           <p className="text-sm text-gray-600">{description}</p>
         </div>
-        <div className={`text-3xl font-bold ${textColorClasses[color]}`}>{count}</div>
+        <div className={`text-4xl font-bold ${textColor}`}>{count}</div>
       </div>
     </div>
   )
