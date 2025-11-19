@@ -2,11 +2,15 @@
 
 import { useEffect, useState } from 'react'
 import { supabase } from '@/lib/supabase'
-import { ClosetItem, DashboardMetrics } from '@/types'
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts'
+import { DashboardMetrics } from '@/types'
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
 import { TrendingUp, Package, DollarSign, Tag } from 'lucide-react'
 
-export default function Dashboard() {
+interface DashboardProps {
+  onNavigateToItems?: (filter?: string) => void
+}
+
+export default function Dashboard({ onNavigateToItems }: DashboardProps) {
   const [metrics, setMetrics] = useState<DashboardMetrics>({
     totalItems: 0,
     totalRetailValue: 0,
@@ -25,7 +29,6 @@ export default function Dashboard() {
 
   async function loadDashboardData() {
     try {
-      // Fetch all items with relations
       const { data: items, error } = await supabase
         .from('closet_items')
         .select(`
@@ -35,10 +38,8 @@ export default function Dashboard() {
         `)
 
       if (error) throw error
-
       if (!items) return
 
-      // Calculate metrics
       const totalItems = items.length
       const totalRetailValue = items.reduce((sum, item) => sum + (item.retail_price_cad || 0), 0)
       const totalResaleValue = items.reduce((sum, item) => sum + (item.estimated_resale_value_cad || 0), 0)
@@ -55,11 +56,11 @@ export default function Dashboard() {
         itemsToPrice,
       })
 
-      // Aggregate by brand
+      // Aggregate RETAIL value by brand
       const brandMap = new Map<string, number>()
       items.forEach(item => {
         const brandName = item.brand?.name || 'Unknown'
-        const value = item.estimated_resale_value_cad || 0
+        const value = item.retail_price_cad || 0
         brandMap.set(brandName, (brandMap.get(brandName) || 0) + value)
       })
       
@@ -115,6 +116,8 @@ export default function Dashboard() {
           value={metrics.totalItems.toString()}
           icon={Package}
           gradient="from-primary-400 to-primary-500"
+          onClick={() => onNavigateToItems?.('all')}
+          clickable
         />
         <MetricCard
           title="Total Retail Value"
@@ -144,6 +147,7 @@ export default function Dashboard() {
           description="Items missing photos"
           gradient="from-primary-100 to-primary-200"
           textColor="text-primary-700"
+          onClick={() => onNavigateToItems?.('no-photos')}
         />
         <ActionCard
           title="Need Pricing"
@@ -151,6 +155,7 @@ export default function Dashboard() {
           description="Items without price estimates"
           gradient="from-peach-100 to-peach-200"
           textColor="text-peach-700"
+          onClick={() => onNavigateToItems?.('no-pricing')}
         />
         <ActionCard
           title="Ready to Sell"
@@ -158,15 +163,16 @@ export default function Dashboard() {
           description="Items marked for sale"
           gradient="from-accent-100 to-accent-200"
           textColor="text-accent-700"
+          onClick={() => onNavigateToItems?.('sell')}
         />
       </div>
 
       {/* Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Value by Brand */}
+        {/* Retail Value by Brand */}
         <div className="card-soft p-6">
           <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-            Value by Brand (Top 10)
+            Retail Value by Brand (Top 10)
             <span className="text-sm">👜</span>
           </h3>
           <ResponsiveContainer width="100%" height={300}>
@@ -251,11 +257,20 @@ interface MetricCardProps {
   value: string
   icon: any
   gradient: string
+  onClick?: () => void
+  clickable?: boolean
 }
 
-function MetricCard({ title, value, icon: Icon, gradient }: MetricCardProps) {
+function MetricCard({ title, value, icon: Icon, gradient, onClick, clickable }: MetricCardProps) {
   return (
-    <div className="card-soft p-6 hover:scale-105 transition-transform duration-300">
+    <div 
+      className={`card-soft p-6 hover:scale-105 transition-transform duration-300 ${
+        clickable ? 'cursor-pointer hover:shadow-glow' : ''
+      }`}
+      onClick={onClick}
+      role={clickable ? 'button' : undefined}
+      tabIndex={clickable ? 0 : undefined}
+    >
       <div className="flex items-center justify-between">
         <div>
           <p className="text-sm text-gray-600 font-medium mb-1">{title}</p>
@@ -277,11 +292,17 @@ interface ActionCardProps {
   description: string
   gradient: string
   textColor: string
+  onClick?: () => void
 }
 
-function ActionCard({ title, count, description, gradient, textColor }: ActionCardProps) {
+function ActionCard({ title, count, description, gradient, textColor, onClick }: ActionCardProps) {
   return (
-    <div className={`rounded-3xl bg-gradient-to-br ${gradient} p-6 shadow-soft hover:shadow-soft-lg transition-all duration-300`}>
+    <div 
+      className={`rounded-3xl bg-gradient-to-br ${gradient} p-6 shadow-soft hover:shadow-soft-lg transition-all duration-300 cursor-pointer hover:scale-105`}
+      onClick={onClick}
+      role="button"
+      tabIndex={0}
+    >
       <div className="flex items-center justify-between">
         <div>
           <p className={`text-lg font-bold ${textColor} mb-1`}>{title}</p>
