@@ -137,27 +137,7 @@ export default function ItemDetail({ item, onClose, onEdit }: ItemDetailProps) {
                 <p className="text-2xl font-bold bg-gradient-to-r from-accent-500 to-accent-600 bg-clip-text text-transparent">
                   {item.resale_price_cad ? `$${item.resale_price_cad.toFixed(0)}` : 'N/A'}
                 </p>
-              </div>
-              <div className="col-span-2">
-                <p className="text-sm text-gray-600 mb-1">Est. Resale Value (CAD)</p>
-                <p className="text-xl font-semibold text-gray-700">
-                  {item.estimated_resale_value_cad ? `$${item.estimated_resale_value_cad.toFixed(0)}` : 'N/A'}
-                </p>
-              </div>
-            </div>
-          </div>
-
-          {/* Listing Copy */}
-          {item.listing_copy && (
-            <div className="card-soft p-6 bg-gradient-to-br from-lavender-50 to-accent-50">
-              <h3 className="text-lg font-bold text-gray-900 mb-2 flex items-center gap-2">
-                AI Listing ✨
-              </h3>
-              <p className="text-gray-700 leading-relaxed whitespace-pre-wrap">{item.listing_copy}</p>
-            </div>
-          )}
-
-          {/* Purchase Details */}
+             {/* Purchase Details */}
           {(item.purchase_date || item.purchase_location) && (
             <div className="grid grid-cols-2 gap-4">
               {item.purchase_date && (
@@ -171,6 +151,15 @@ export default function ItemDetail({ item, onClose, onEdit }: ItemDetailProps) {
               )}
             </div>
           )}
+
+          {/* Edit Button */}
+          <button
+            onClick={onEdit}
+            className="w-full btn-primary flex items-center justify-center gap-2 py-3"
+          >
+            <Edit2 className="w-5 h-5" />
+            Edit Item
+          </button>
 
           {/* Edit Button */}
           <button
