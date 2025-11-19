@@ -4,12 +4,32 @@
 
 @layer base {
   body {
-    @apply bg-gray-50 text-gray-900;
+    @apply bg-gradient-to-br from-cream-50 via-primary-50 to-lavender-50 text-gray-900;
+  }
+  
+  * {
+    @apply transition-colors duration-200;
   }
 }
 
 @layer utilities {
   .text-balance {
     text-wrap: balance;
+  }
+  
+  .glass-effect {
+    @apply bg-white/80 backdrop-blur-sm;
+  }
+  
+  .card-soft {
+    @apply bg-white rounded-3xl shadow-soft hover:shadow-soft-lg transition-all duration-300;
+  }
+  
+  .btn-primary {
+    @apply bg-gradient-to-r from-primary-500 to-accent-500 text-white rounded-2xl px-6 py-3 font-medium hover:shadow-glow transition-all duration-300 hover:scale-105;
+  }
+  
+  .btn-secondary {
+    @apply bg-white text-primary-600 border-2 border-primary-200 rounded-2xl px-6 py-3 font-medium hover:border-primary-300 hover:bg-primary-50 transition-all duration-300;
   }
 }
