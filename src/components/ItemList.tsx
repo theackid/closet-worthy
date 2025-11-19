@@ -113,18 +113,23 @@ export default function ItemList({ onEdit, refreshTrigger }: ItemListProps) {
 
   return (
     <div className="space-y-6">
-      <h2 className="text-2xl font-bold text-gray-900">Closet Items</h2>
+      <div className="flex items-center gap-3">
+        <h2 className="text-3xl font-bold bg-gradient-to-r from-primary-600 to-accent-600 bg-clip-text text-transparent">
+          Your Closet
+        </h2>
+        <span className="text-2xl">👗</span>
+      </div>
 
       {/* Search and Filters */}
       <div className="flex flex-col md:flex-row gap-4">
         <div className="flex-1 relative">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+          <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-primary-300 w-5 h-5" />
           <input
             type="text"
             placeholder="Search by name, brand, category, colour..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+            className="w-full pl-12 pr-4 py-3 border-2 border-primary-100 rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary-300 focus:border-transparent bg-white/80 backdrop-blur-sm transition-all"
           />
         </div>
 
@@ -163,15 +168,15 @@ export default function ItemList({ onEdit, refreshTrigger }: ItemListProps) {
       </div>
 
       {/* Items Count */}
-      <div className="text-sm text-gray-600">
-        Showing {filteredItems.length} of {items.length} items
+      <div className="text-sm text-primary-400 font-medium">
+        Showing {filteredItems.length} of {items.length} items ✨
       </div>
 
       {/* Items Grid */}
       {filteredItems.length === 0 ? (
-        <div className="text-center py-12 bg-gray-50 rounded-lg">
-          <Package className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-          <p className="text-gray-600">No items found</p>
+        <div className="text-center py-16 card-soft">
+          <Package className="w-16 h-16 text-primary-200 mx-auto mb-4" />
+          <p className="text-primary-400">No items found</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -199,10 +204,10 @@ function FilterButton({ active, onClick, label }: FilterButtonProps) {
   return (
     <button
       onClick={onClick}
-      className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+      className={`px-5 py-2.5 rounded-2xl text-sm font-medium transition-all duration-300 ${
         active
-          ? 'bg-primary-600 text-white'
-          : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'
+          ? 'bg-gradient-to-r from-primary-500 to-accent-500 text-white shadow-soft hover:shadow-glow'
+          : 'bg-white/80 backdrop-blur-sm text-gray-700 border-2 border-primary-100 hover:border-primary-200 hover:bg-primary-50/50'
       }`}
     >
       {label}
@@ -218,53 +223,53 @@ interface ItemCardProps {
 
 function ItemCard({ item, onEdit, onDelete }: ItemCardProps) {
   const photoUrl = item.photo_urls && item.photo_urls.length > 0 ? item.photo_urls[0] : null
-  const statusColors = {
-    Keep: 'bg-blue-100 text-blue-800',
-    Sell: 'bg-green-100 text-green-800',
-    Donate: 'bg-purple-100 text-purple-800',
+  const statusStyles = {
+    Keep: 'bg-gradient-to-r from-lavender-100 to-lavender-200 text-lavender-700 border-lavender-200',
+    Sell: 'bg-gradient-to-r from-accent-100 to-accent-200 text-accent-700 border-accent-200',
+    Donate: 'bg-gradient-to-r from-peach-100 to-peach-200 text-peach-700 border-peach-200',
   }
 
   return (
-    <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
+    <div className="card-soft overflow-hidden hover:scale-105 hover:shadow-glow transition-all duration-300 group">
       {/* Photo */}
-      <div className="aspect-square bg-gray-100 relative">
+      <div className="aspect-square bg-gradient-to-br from-cream-100 to-primary-50 relative overflow-hidden">
         {photoUrl ? (
           <img
             src={photoUrl}
             alt={item.item_name}
-            className="w-full h-full object-cover"
+            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center">
-            <Package className="w-16 h-16 text-gray-300" />
+            <Package className="w-20 h-20 text-primary-200" />
           </div>
         )}
-        <div className="absolute top-2 right-2">
-          <span className={`px-2 py-1 rounded text-xs font-medium ${statusColors[item.status || 'Keep']}`}>
+        <div className="absolute top-3 right-3">
+          <span className={`px-3 py-1.5 rounded-xl text-xs font-semibold border-2 backdrop-blur-sm ${statusStyles[item.status || 'Keep']}`}>
             {item.status || 'Keep'}
           </span>
         </div>
       </div>
 
       {/* Info */}
-      <div className="p-4">
-        <h3 className="font-semibold text-gray-900 mb-1 line-clamp-2">{item.item_name}</h3>
-        <p className="text-sm text-gray-600 mb-2">
+      <div className="p-5">
+        <h3 className="font-semibold text-gray-900 mb-1.5 line-clamp-2 text-lg">{item.item_name}</h3>
+        <p className="text-sm text-primary-500 mb-3 font-medium">
           {item.brand?.name || 'Unknown Brand'}
           {item.size && ` • ${item.size}`}
         </p>
         
-        <div className="flex items-center justify-between text-sm mb-2">
-          <span className="text-gray-600">
+        <div className="flex items-center justify-between text-xs mb-3 text-gray-500">
+          <span className="bg-cream-100 px-2 py-1 rounded-lg">
             {item.category?.name || 'Uncategorized'}
           </span>
-          <span className="text-gray-600">
+          <span className="bg-lavender-100 px-2 py-1 rounded-lg">
             {item.condition?.label || 'N/A'}
           </span>
         </div>
 
         {/* Pricing */}
-        <div className="border-t pt-3 mb-3">
+        <div className="border-t border-primary-100 pt-3 mb-4 space-y-2">
           <div className="flex justify-between text-sm">
             <span className="text-gray-600">Retail:</span>
             <span className="font-semibold text-gray-900">
@@ -273,7 +278,7 @@ function ItemCard({ item, onEdit, onDelete }: ItemCardProps) {
           </div>
           <div className="flex justify-between text-sm">
             <span className="text-gray-600">Resale:</span>
-            <span className="font-semibold text-green-600">
+            <span className="font-semibold bg-gradient-to-r from-accent-500 to-accent-600 bg-clip-text text-transparent">
               {item.resale_price_cad ? `$${item.resale_price_cad.toFixed(0)}` : 'N/A'}
             </span>
           </div>
@@ -283,14 +288,14 @@ function ItemCard({ item, onEdit, onDelete }: ItemCardProps) {
         <div className="flex gap-2">
           <button
             onClick={onEdit}
-            className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-primary-600 text-white rounded-md hover:bg-primary-700 text-sm"
+            className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-gradient-to-r from-primary-500 to-accent-500 text-white rounded-xl hover:shadow-glow transition-all text-sm font-medium"
           >
             <Edit2 className="w-4 h-4" />
             Edit
           </button>
           <button
             onClick={onDelete}
-            className="px-3 py-2 border border-red-300 text-red-600 rounded-md hover:bg-red-50 text-sm"
+            className="px-4 py-2.5 border-2 border-primary-200 text-primary-600 rounded-xl hover:bg-primary-50 hover:border-primary-300 transition-all text-sm"
           >
             <Trash2 className="w-4 h-4" />
           </button>
