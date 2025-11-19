@@ -253,15 +253,18 @@ export default function ItemForm({ item, onSave, onCancel }: ItemFormProps) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6 bg-white p-6 rounded-lg shadow-md">
+    <form onSubmit={handleSubmit} className="space-y-6 card-soft p-8">
       <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold text-gray-900">
-          {item ? 'Edit Item' : 'Add New Item'}
-        </h2>
+        <div className="flex items-center gap-3">
+          <h2 className="text-3xl font-bold bg-gradient-to-r from-primary-600 to-accent-600 bg-clip-text text-transparent">
+            {item ? 'Edit Item' : 'Add New Item'}
+          </h2>
+          <span className="text-2xl">✨</span>
+        </div>
         <button
           type="button"
           onClick={onCancel}
-          className="text-gray-400 hover:text-gray-600"
+          className="text-primary-400 hover:text-primary-600 p-2 hover:bg-primary-50 rounded-xl transition-all"
         >
           <X className="w-6 h-6" />
         </button>
@@ -269,31 +272,32 @@ export default function ItemForm({ item, onSave, onCancel }: ItemFormProps) {
 
       {/* Photos */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
-          Photos
+        <label className="block text-sm font-semibold text-gray-700 mb-3">
+          Photos 📸
         </label>
         <div className="flex flex-wrap gap-4 mb-4">
           {photoPreviews.map((preview, index) => (
-            <div key={index} className="relative">
+            <div key={index} className="relative group">
               <img
                 src={preview}
                 alt={`Preview ${index + 1}`}
-                className="w-24 h-24 object-cover rounded-lg"
+                className="w-28 h-28 object-cover rounded-2xl shadow-soft"
               />
               <button
                 type="button"
                 onClick={() => removePhoto(index)}
-                className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600"
+                className="absolute -top-2 -right-2 bg-gradient-to-r from-primary-500 to-accent-500 text-white rounded-full p-1.5 hover:shadow-glow transition-all opacity-0 group-hover:opacity-100"
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
           ))}
         </div>
-        <label className="flex items-center justify-center w-full h-32 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-primary-500">
+        <label className="flex items-center justify-center w-full h-36 border-3 border-dashed border-primary-200 rounded-3xl cursor-pointer hover:border-primary-300 hover:bg-primary-50/30 transition-all group bg-gradient-to-br from-cream-50 to-primary-50">
           <div className="flex flex-col items-center">
-            <Upload className="w-8 h-8 text-gray-400" />
-            <span className="mt-2 text-sm text-gray-500">Upload photos</span>
+            <Upload className="w-10 h-10 text-primary-300 group-hover:text-primary-400 transition-colors" />
+            <span className="mt-2 text-sm text-primary-400 font-medium">Upload photos</span>
+            <span className="text-xs text-gray-400 mt-1">Click or drag and drop</span>
           </div>
           <input
             type="file"
@@ -308,7 +312,7 @@ export default function ItemForm({ item, onSave, onCancel }: ItemFormProps) {
       {/* Basic Info */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-sm font-semibold text-gray-700 mb-2">
             Item Name *
           </label>
           <input
@@ -316,20 +320,20 @@ export default function ItemForm({ item, onSave, onCancel }: ItemFormProps) {
             required
             value={formData.item_name}
             onChange={(e) => setFormData({ ...formData, item_name: e.target.value })}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+            className="w-full px-3 py-2 border-2 border-primary-100 rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary-300 focus:border-transparent bg-white/80 backdrop-blur-sm transition-all"
             placeholder="e.g., 90s Pinch Waist Jeans"
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-sm font-semibold text-gray-700 mb-2">
             Brand *
           </label>
           <select
             required
             value={formData.brand_id}
             onChange={(e) => setFormData({ ...formData, brand_id: e.target.value })}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+            className="w-full px-3 py-2 border-2 border-primary-100 rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary-300 focus:border-transparent bg-white/80 backdrop-blur-sm transition-all"
           >
             <option value="">Select brand</option>
             {brands.map(brand => (
@@ -339,40 +343,40 @@ export default function ItemForm({ item, onSave, onCancel }: ItemFormProps) {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-sm font-semibold text-gray-700 mb-2">
             Brand Override (optional)
           </label>
           <input
             type="text"
             value={formData.brand_override_text}
             onChange={(e) => setFormData({ ...formData, brand_override_text: e.target.value })}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+            className="w-full px-3 py-2 border-2 border-primary-100 rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary-300 focus:border-transparent bg-white/80 backdrop-blur-sm transition-all"
             placeholder="e.g., Isabel Marant Étoile"
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-sm font-semibold text-gray-700 mb-2">
             Model / Style
           </label>
           <input
             type="text"
             value={formData.model_style_text}
             onChange={(e) => setFormData({ ...formData, model_style_text: e.target.value })}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+            className="w-full px-3 py-2 border-2 border-primary-100 rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary-300 focus:border-transparent bg-white/80 backdrop-blur-sm transition-all"
             placeholder="e.g., Kotto Jacket"
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-sm font-semibold text-gray-700 mb-2">
             Category *
           </label>
           <select
             required
             value={formData.category_id}
             onChange={(e) => setFormData({ ...formData, category_id: e.target.value })}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+            className="w-full px-3 py-2 border-2 border-primary-100 rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary-300 focus:border-transparent bg-white/80 backdrop-blur-sm transition-all"
           >
             <option value="">Select category</option>
             {categories.map(cat => (
@@ -382,13 +386,13 @@ export default function ItemForm({ item, onSave, onCancel }: ItemFormProps) {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-sm font-semibold text-gray-700 mb-2">
             Subcategory
           </label>
           <select
             value={formData.subcategory_id}
             onChange={(e) => setFormData({ ...formData, subcategory_id: e.target.value })}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+            className="w-full px-3 py-2 border-2 border-primary-100 rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary-300 focus:border-transparent bg-white/80 backdrop-blur-sm transition-all"
           >
             <option value="">Select subcategory</option>
             {subcategories
@@ -400,14 +404,14 @@ export default function ItemForm({ item, onSave, onCancel }: ItemFormProps) {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-sm font-semibold text-gray-700 mb-2">
             Condition *
           </label>
           <select
             required
             value={formData.condition_id}
             onChange={(e) => setFormData({ ...formData, condition_id: e.target.value })}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+            className="w-full px-3 py-2 border-2 border-primary-100 rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary-300 focus:border-transparent bg-white/80 backdrop-blur-sm transition-all"
           >
             <option value="">Select condition</option>
             {conditions.map(cond => (
@@ -417,33 +421,33 @@ export default function ItemForm({ item, onSave, onCancel }: ItemFormProps) {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-sm font-semibold text-gray-700 mb-2">
             Size
           </label>
           <input
             type="text"
             value={formData.size}
             onChange={(e) => setFormData({ ...formData, size: e.target.value })}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+            className="w-full px-3 py-2 border-2 border-primary-100 rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary-300 focus:border-transparent bg-white/80 backdrop-blur-sm transition-all"
             placeholder="e.g., 30, M, EU 44"
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-sm font-semibold text-gray-700 mb-2">
             Colour
           </label>
           <input
             type="text"
             value={formData.colour}
             onChange={(e) => setFormData({ ...formData, colour: e.target.value })}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+            className="w-full px-3 py-2 border-2 border-primary-100 rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary-300 focus:border-transparent bg-white/80 backdrop-blur-sm transition-all"
             placeholder="e.g., Washed black"
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-sm font-semibold text-gray-700 mb-2">
             Purchase Price (CAD)
           </label>
           <input
@@ -451,30 +455,30 @@ export default function ItemForm({ item, onSave, onCancel }: ItemFormProps) {
             step="0.01"
             value={formData.purchase_price_cad}
             onChange={(e) => setFormData({ ...formData, purchase_price_cad: e.target.value })}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+            className="w-full px-3 py-2 border-2 border-primary-100 rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary-300 focus:border-transparent bg-white/80 backdrop-blur-sm transition-all"
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-sm font-semibold text-gray-700 mb-2">
             Purchase Date
           </label>
           <input
             type="date"
             value={formData.purchase_date}
             onChange={(e) => setFormData({ ...formData, purchase_date: e.target.value })}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+            className="w-full px-3 py-2 border-2 border-primary-100 rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary-300 focus:border-transparent bg-white/80 backdrop-blur-sm transition-all"
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-sm font-semibold text-gray-700 mb-2">
             Status
           </label>
           <select
             value={formData.status}
             onChange={(e) => setFormData({ ...formData, status: e.target.value as any })}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+            className="w-full px-3 py-2 border-2 border-primary-100 rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary-300 focus:border-transparent bg-white/80 backdrop-blur-sm transition-all"
           >
             <option value="Keep">Keep</option>
             <option value="Sell">Sell</option>
@@ -484,14 +488,19 @@ export default function ItemForm({ item, onSave, onCancel }: ItemFormProps) {
       </div>
 
       {/* AI Pricing Section */}
-      <div className="border-t pt-6">
+      <div className="border-t border-primary-100 pt-6">
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-lg font-semibold text-gray-900">AI Pricing</h3>
+          <div className="flex items-center gap-2">
+            <h3 className="text-lg font-bold bg-gradient-to-r from-primary-600 to-accent-600 bg-clip-text text-transparent">
+              AI Pricing
+            </h3>
+            <Sparkles className="w-5 h-5 text-accent-400" />
+          </div>
           <button
             type="button"
             onClick={runAIPricing}
             disabled={aiLoading}
-            className="flex items-center gap-2 px-4 py-2 bg-primary-600 text-white rounded-md hover:bg-primary-700 disabled:opacity-50"
+            className="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-primary-500 to-accent-500 text-white rounded-2xl hover:shadow-glow disabled:opacity-50 disabled:cursor-not-allowed transition-all font-medium"
           >
             <Sparkles className="w-4 h-4" />
             {aiLoading ? 'Generating...' : 'Generate Prices'}
@@ -500,7 +509,7 @@ export default function ItemForm({ item, onSave, onCancel }: ItemFormProps) {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-semibold text-gray-700 mb-2">
               Retail Price (CAD)
             </label>
             <input
@@ -508,12 +517,12 @@ export default function ItemForm({ item, onSave, onCancel }: ItemFormProps) {
               step="0.01"
               value={formData.retail_price_cad}
               onChange={(e) => setFormData({ ...formData, retail_price_cad: e.target.value })}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+              className="w-full px-3 py-2 border-2 border-primary-100 rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary-300 focus:border-transparent bg-white/80 backdrop-blur-sm transition-all"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-semibold text-gray-700 mb-2">
               Resale Price (CAD)
             </label>
             <input
@@ -521,21 +530,26 @@ export default function ItemForm({ item, onSave, onCancel }: ItemFormProps) {
               step="0.01"
               value={formData.resale_price_cad}
               onChange={(e) => setFormData({ ...formData, resale_price_cad: e.target.value })}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+              className="w-full px-3 py-2 border-2 border-primary-100 rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary-300 focus:border-transparent bg-white/80 backdrop-blur-sm transition-all"
             />
           </div>
         </div>
       </div>
 
       {/* AI Listing Section */}
-      <div className="border-t pt-6">
+      <div className="border-t border-primary-100 pt-6">
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-lg font-semibold text-gray-900">AI Listing</h3>
+          <div className="flex items-center gap-2">
+            <h3 className="text-lg font-bold bg-gradient-to-r from-primary-600 to-accent-600 bg-clip-text text-transparent">
+              AI Listing
+            </h3>
+            <Sparkles className="w-5 h-5 text-accent-400" />
+          </div>
           <button
             type="button"
             onClick={runAIListing}
             disabled={aiLoading}
-            className="flex items-center gap-2 px-4 py-2 bg-primary-600 text-white rounded-md hover:bg-primary-700 disabled:opacity-50"
+            className="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-primary-500 to-accent-500 text-white rounded-2xl hover:shadow-glow disabled:opacity-50 disabled:cursor-not-allowed transition-all font-medium"
           >
             <Sparkles className="w-4 h-4" />
             {aiLoading ? 'Generating...' : 'Generate Listing'}
@@ -544,44 +558,44 @@ export default function ItemForm({ item, onSave, onCancel }: ItemFormProps) {
 
         <div className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-semibold text-gray-700 mb-2">
               Listing Title
             </label>
             <input
               type="text"
               value={formData.ai_listing_title}
               onChange={(e) => setFormData({ ...formData, ai_listing_title: e.target.value })}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+              className="w-full px-3 py-2 border-2 border-primary-100 rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary-300 focus:border-transparent bg-white/80 backdrop-blur-sm transition-all"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-semibold text-gray-700 mb-2">
               Listing Description
             </label>
             <textarea
               rows={4}
               value={formData.ai_listing_description}
               onChange={(e) => setFormData({ ...formData, ai_listing_description: e.target.value })}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+              className="w-full px-3 py-2 border-2 border-primary-100 rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary-300 focus:border-transparent bg-white/80 backdrop-blur-sm transition-all"
             />
           </div>
         </div>
       </div>
 
       {/* Form Actions */}
-      <div className="flex justify-end gap-3 border-t pt-6">
+      <div className="flex justify-end gap-3 border-t border-primary-100 pt-6">
         <button
           type="button"
           onClick={onCancel}
-          className="px-6 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
+          className="px-6 py-3 border-2 border-primary-200 rounded-2xl text-primary-700 hover:bg-primary-50 hover:border-primary-300 transition-all font-medium"
         >
           Cancel
         </button>
         <button
           type="submit"
           disabled={loading}
-          className="px-6 py-2 bg-primary-600 text-white rounded-md hover:bg-primary-700 disabled:opacity-50"
+          className="px-6 py-3 bg-gradient-to-r from-primary-500 to-accent-500 text-white rounded-2xl hover:shadow-glow disabled:opacity-50 disabled:cursor-not-allowed transition-all font-medium"
         >
           {loading ? 'Saving...' : (item ? 'Update Item' : 'Add Item')}
         </button>
